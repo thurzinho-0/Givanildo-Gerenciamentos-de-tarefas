@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Genivaldo - Gerenciamento de Tarefas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .form-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .form-box {
+            padding: 40px;
+            animation: fadeIn 0.5s;
+        }
+
+        .form-box h2 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 24px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .input-group input, .input-group textarea, .input-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+
+        .input-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .input-group input:focus, .input-group textarea:focus, .input-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            padding: 8px 16px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-left: 5px;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-logout {
+            padding: 8px 20px;
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-logout:hover {
+            background: #d32f2f;
+        }
+
+        .toggle-form {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .toggle-form a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .toggle-form a:hover {
+            text-decoration: underline;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .dashboard {
+            padding: 30px;
+            animation: fadeIn 0.5s;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .dashboard-header h2 {
+            color: #333;
+            font-size: 22px;
+        }
+
+        .user-info {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        /* Gerenciamento de Tarefas */
+        .task-section {
+            margin-bottom: 25px;
+        }
+
+        .task-form {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .task-form h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            background: white;
+            border: 2px solid #667eea;
+            color: #667eea;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .task-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .task-item {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .task-item:hover {
+            transform: translateX(5px);
+        }
+
+        .task-item.completed {
+            opacity: 0.7;
+            border-left-color: #4caf50;
+            background: #f1f8f4;
+        }
+
+        .task-item.completed .task-title {
+            text-decoration: line-through;
+            color: #888;
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .task-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            flex: 1;
+        }
+
+        .task-category {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-left: 10px;
+        }
+
+        .task-description {
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn-edit {
+            padding: 6px 12px;
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .btn-edit:hover {
+            background: #0b7dda;
+        }
+
+        .btn-delete {
+            padding: 6px 12px;
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .btn-delete:hover {
+            background: #d32f2f;
+        }
+
+        .btn-complete {
+            padding: 6px 12px;
+            background: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .btn-complete:hover {
+            background: #45a049;
+        }
+
+        .btn-pending {
+            padding: 6px 12px;
+            background: #ff9800;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .btn-pending:hover {
+            background: #e68900;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 10px;
+            color: #666;
+        }
+
+        .message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+            display: none;
+        }
+
+        .message.success {
+            background: #4caf50;
+            color: white;
+            display: block;
+            animation: slideDown 0.3s;
+        }
+
+        .message.error {
+            background: #f44336;
+            color: white;
+            display: block;
+            animation: slideDown 0.3s;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            color: #667eea;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .category-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .category-color {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+
+        .category-info {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+
+        .category-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+
+            .task-actions {
+                width: 100%;
+            }
+
+            .task-actions button {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <!-- Formulário de Login -->
+            <div class="form-box" id="loginForm">
+                <h2>🔐 Login - Sistema Genivaldo</h2>
+                <form onsubmit="handleLogin(event)">
+                    <div class="input-group">
+                        <label for="loginEmail">E-mail</label>
+                        <input type="email" id="loginEmail" required placeholder="Digite seu e-mail">
+                    </div>
+                    <div class="input-group">
+                        <label for="loginPassword">Senha</label>
+                        <input type="password" id="loginPassword" required placeholder="Digite sua senha">
+                    </div>
+                    <button type="submit" class="btn-primary">Entrar</button>
+                    <p class="toggle-form">
+                        Não tem conta? <a href="#" onclick="toggleForm(); return false;">Cadastre-se</a>
+                    </p>
+                </form>
+            </div>
+
+            <!-- Formulário de Cadastro -->
+            <div class="form-box hidden" id="cadastroForm">
+                <h2>📝 Cadastro - Sistema Genivaldo</h2>
+                <form onsubmit="handleCadastro(event)">
+                    <div class="input-group">
+                        <label for="cadastroNome">Nome Completo</label>
+                        <input type="text" id="cadastroNome" required placeholder="Digite seu nome completo">
+                    </div>
+                    <div class="input-group">
+                        <label for="cadastroEmail">E-mail</label>
+                        <input type="email" id="cadastroEmail" required placeholder="Digite seu e-mail">
+                    </div>
+                    <div class="input-group">
+                        <label for="cadastroTelefone">Telefone</label>
+                        <input type="tel" id="cadastroTelefone" placeholder="(00) 00000-0000">
+                    </div>
+                    <div class="input-group">
+                        <label for="cadastroPassword">Senha</label>
+                        <input type="password" id="cadastroPassword" required placeholder="Mínimo 6 caracteres" minlength="6">
+                    </div>
+                    <div class="input-group">
+                        <label for="cadastroConfirmPassword">Confirmar Senha</label>
+                        <input type="password" id="cadastroConfirmPassword" required placeholder="Confirme sua senha">
+                    </div>
+                    <button type="submit" class="btn-primary">Cadastrar</button>
+                    <p class="toggle-form">
+                        Já tem conta? <a href="#" onclick="toggleForm(); return false;">Fazer Login</a>
+                    </p>
+                </form>
+            </div>
+
+            <!-- Dashboard Principal -->
+            <div class="dashboard hidden" id="dashboard">
+                <div class="dashboard-header">
+                    <h2>📋 Sistema de Gerenciamento de Tarefas</h2>
+                    <button onclick="handleLogout()" class="btn-logout">Sair</button>
+                </div>
+
+                <div class="user-info">
+                    <strong>👤 Usuário:</strong> <span id="userName"></span> | 
+                    <strong>📧 E-mail:</strong> <span id="userEmail"></span>
+                </div>
+
+                <!-- Abas -->
+                <div class="tabs">
+                    <button class="tab active" onclick="switchTab('tarefas')">📝 Tarefas</button>
+                    <button class="tab" onclick="switchTab('categorias')">🏷️ Categorias</button>
+                </div>
+
+                <!-- Seção de Tarefas -->
+                <div id="tarefasSection" class="task-section">
+                    <!-- Formulário de Adicionar/Editar Tarefa -->
+                    <div class="task-form">
+                        <h3 id="formTitle">➕ Adicionar Nova Tarefa</h3>
+                        <form onsubmit="handleTaskSubmit(event)" id="taskForm">
+                            <input type="hidden" id="editTaskId">
+                            <div class="input-group">
+                                <label for="taskTitle">Título da Tarefa *</label>
+                                <input type="text" id="taskTitle" required placeholder="Ex: Comprar mantimentos">
+                            </div>
+                            <div class="input-group">
+                                <label for="taskDescription">Descrição</label>
+                                <textarea id="taskDescription" placeholder="Detalhes da tarefa (opcional)"></textarea>
+                            </div>
+                            <div class="form-row">
+                                <div class="input-group">
+                                    <label for="taskCategory">Categoria</label>
+                                    <select id="taskCategory">
+                                        <option value="">Sem categoria</option>
+                                    </select>
+                                </div>
+                                <div class="input-group">
+                                    <label>&nbsp;</label>
+                                    <div style="display: flex; gap: 10px;">
+                                        <button type="submit" class="btn-primary" style="width: auto; flex: 1;">Salvar Tarefa</button>
+                                        <button type="button" class="btn-secondary" onclick="cancelEdit()" id="cancelBtn" style="display: none;">Cancelar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Filtros -->
+                    <div class="filters">
+                        <button class="filter-btn active" onclick="filterTasks('all')">Todas</button>
+                        <button class="filter-btn" onclick="filterTasks('pending')">Pendentes</button>
+                        <button class="filter-btn" onclick="filterTasks('completed')">Concluídas</button>
+                        <select id="categoryFilter" onchange="filterByCategory()" style="padding: 8px; border-radius: 5px; border: 2px solid #667eea;">
+                            <option value="">Todas as Categorias</option>
+                        </select>
+                    </div>
+
+                    <!-- Lista de Tarefas -->
+                    <div class="task-list" id="taskList"></div>
+                </div>
+
+                <!-- Seção de Categorias -->
+                <div id="categoriasSection" class="task-section hidden">
+                    <div class="task-form">
+                        <h3 id="categoryFormTitle">➕ Adicionar Nova Categoria</h3>
+                        <form onsubmit="handleCategorySubmit(event)" id="categoryForm">
+                            <input type="hidden" id="editCategoryId">
+                            <div class="form-row">
+                                <div class="input-group">
+                                    <label for="categoryName">Nome da Categoria *</label>
+                                    <input type="text" id="categoryName" required placeholder="Ex: Trabalho, Pessoal">
+                                </div>
+                                <div class="input-group">
+                                    <label for="categoryColor">Cor</label>
+                                    <input type="color" id="categoryColor" value="#667eea">
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 10px;">
+                                <button type="submit" class="btn-primary" style="flex: 1;">Salvar Categoria</button>
+                                <button type="button" class="btn-secondary" onclick="cancelCategoryEdit()" id="cancelCategoryBtn" style="display: none;">Cancelar</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="categoryList"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="message" id="message"></div>
+    </div>
+
+    <script>
+        let currentFilter = 'all';
+        let currentCategoryFilter = '';
+        let editingTaskId = null;
+        let editingCategoryId = null;
+
+        // Inicializar categorias padrão
+        function initDefaultCategories() {
+            const categories = JSON.parse(localStorage.getItem('categories')) || [];
+            if (categories.length === 0) {
+                const defaultCategories = [
+                    { id: Date.now() + 1, name: 'Trabalho', color: '#2196F3' },
+                    { id: Date.now() + 2, name: 'Pessoal', color: '#4caf50' },
+                    { id: Date.now() + 3, name: 'Estudos', color: '#ff9800' }
+                ];
+                localStorage.setItem('categories', JSON.stringify(defaultCategories));
+            }
+        }
+
+        // Alternar entre login e cadastro
+        function toggleForm() {
+            const loginForm = document.getElementById('loginForm');
+            const cadastroForm = document.getElementById('cadastroForm');
+            
+            loginForm.classList.toggle('hidden');
+            cadastroForm.classList.toggle('hidden');
+            hideMessage();
+        }
+
+        // Mostrar mensagens
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = 'message ' + type;
+            
+            setTimeout(() => {
+                hideMessage();
+            }, 3000);
+        }
+
+        function hideMessage() {
+            const messageDiv = document.getElementById('message');
+            messageDiv.className = 'message';
+        }
+
+        // Cadastro
+        function handleCadastro(event) {
+            event.preventDefault();
+            
+            const nome = document.getElementById('cadastroNome').value;
+            const email = document.getElementById('cadastroEmail').value;
+            const telefone = document.getElementById('cadastroTelefone').value;
+            const password = document.getElementById('cadastroPassword').value;
+            const confirmPassword = document.getElementById('cadastroConfirmPassword').value;
+
+            if (password !== confirmPassword) {
+                showMessage('As senhas não coincidem!', 'error');
+                return;
+            }
+
+            if (password.length < 6) {
+                showMessage('A senha deve ter no mínimo 6 caracteres!', 'error');
+                return;
+            }
+
+            const usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+            const usuarioExiste = usuarios.find(u => u.email === email);
+
+            if (usuarioExiste) {
+                showMessage('Este e-mail já está cadastrado!', 'error');
+                return;
+            }
+
+            const novoUsuario = {
+                nome: nome,
+                email: email,
+                telefone: telefone,
+                password: password
+            };
+
+            usuarios.push(novoUsuario);
+            localStorage.setItem('usuarios', JSON.stringify(usuarios));
+
+            showMessage('Cadastro realizado com sucesso!', 'success');
+            
+            document.getElementById('cadastroNome').value = '';
+            document.getElementById('cadastroEmail').value = '';
+            document.getElementById('cadastroTelefone').value = '';
+            document.getElementById('cadastroPassword').value = '';
+            document.getElementById('cadastroConfirmPassword').value = '';
+
+            setTimeout(() => {
+                toggleForm();
+            }, 2000);
+        }
+
+        // Login
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            const usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+            const usuario = usuarios.find(u => u.email === email && u.password === password);
+
+            if (!usuario) {
+                showMessage('E-mail ou senha incorretos!', 'error');
+                return;
+            }
+
+            localStorage.setItem('usuarioLogado', JSON.stringify(usuario));
+            showMessage('Login realizado com sucesso!', 'success');
+
+            setTimeout(() => {
+                mostrarDashboard(usuario);
+            }, 1000);
+        }
+
+        // Mostrar Dashboard
+        function mostrarDashboard(usuario) {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('cadastroForm').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+
+            document.getElementById('userName').textContent = usuario.nome;
+            document.getElementById('userEmail').textContent = usuario.email;
+
+            initDefaultCategories();
+            loadCategories();
+            loadTasks();
+        }
+
+        // Logout
+        function handleLogout() {
+            localStorage.removeItem('usuarioLogado');
+            
+            document.getElementById('dashboard').classList.add('hidden');
+            document.getElementById('loginForm').classList.remove('hidden');
+            
+            document.getElementById('loginEmail').value = '';
+            document.getElementById('loginPassword').value = '';
+            
+            showMessage('Você saiu do sistema!', 'success');
+        }
+
+        // Alternar entre abas
+        function switchTab(tab) {
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(t => t.classList.remove('active'));
+            
+            if (tab === 'tarefas') {
+                document.getElementById('tarefasSection').classList.remove('hidden');
+                document.getElementById('categoriasSection').classList.add('hidden');
+                tabs[0].classList.add('active');
+            } else {
+                document.getElementById('tarefasSection').classList.add('hidden');
+                document.getElementById('categoriasSection').classList.remove('hidden');
+                tabs[1].classList.add('active');
+                loadCategoryList();
+            }
+        }
+
+        // Gerenciamento de Categorias
+        function loadCategories() {
+            const categories = JSON.parse(localStorage.getItem('categories')) || [];
+            const taskCategorySelect = document.getElementById('taskCategory');
+            const categoryFilter = document.getElementById('categoryFilter');
+            
+            taskCategorySelect.innerHTML = '<option value="">Sem categoria</option>';
+            categoryFilter.innerHTML = '<option value="">Todas as Categorias</option>';
+            
+            categories.forEach(cat => {
+                const option1 = document.createElement('option');
+                option1.value = cat.id;
+                option1.textContent = cat.name;
+                taskCategorySelect.appendChild(option1);
+
+                const option2 = document.createElement('option');
+                option2.value = cat.id;
+                option2.textContent = cat.name;
+                categoryFilter.appendChild(option2);
+            });
+        }
+
+        function handleCategorySubmit(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('categoryName').value.trim();
+            const color = document.getElementById('categoryColor').value;
+            const categories = JSON.parse(localStorage.getItem('categories')) || [];
+
+            if (editingCategoryId) {
+                const index = categories.findIndex(c => c.id === editingCategoryId);
+                if (index !== -1) {
+                    const duplicate = categories.find(c => c.name.toLowerCase() === name.toLowerCase() && c.id !== editingCategoryId);
+                    if (duplicate) {
+                        showMessage('Já existe uma categoria com este nome!', 'error');
+                        return;
+                    }
+                    categories[index] = { ...categories[index], name, color };
+                    showMessage('Categoria atualizada com sucesso!', 'success');
+                }
+                editingCategoryId = null;
+            } else {
+                const duplicate = categories.find(c => c.name.toLowerCase() === name.toLowerCase());
+                if (duplicate) {
+                    showMessage('Já existe uma categoria com este nome!', 'error');
+                    return;
+                }
+                const newCategory = {
+                    id: Date.now(),
+                    name: name,
+                    color: color
+                };
+                categories.push(newCategory);
+                showMessage('Categoria criada com sucesso!', 'success');
+            }
+
+            localStorage.setItem('categories', JSON.stringify(categories));
+            document.getElementById('categoryForm').reset();
+            document.getElementById('categoryColor').value = '#667eea';
+            document.getElementById('categoryFormTitle').textContent = '➕ Adicionar Nova Categoria';
+            document.getElementById('cancelCategoryBtn').style.display = 'none';
+            
+            loadCategories();
+            loadCategoryList();
+        }
+
+        function loadCategoryList() {
+            const categories = JSON.parse(localStorage.getItem('categories')) || [];
+            const categoryList = document.getElementById('categoryList');
+            
+            if (categories.length === 0) {
+                categoryList.innerHTML = '<div class="empty-state"><h3>Nenhuma categoria criada</h3><p>Crie sua primeira categoria!</p></div>';
+                return;
+            }
+
+            categoryList.innerHTML = categories.map(cat => `
+                <div class="category-item">
+                    <div class="category-info">
+                        <div class="category-color" style="background: ${cat.color}"></div>
+                        <span class="category-name">${cat.name}</span>
+                    </div>
+                    <div class="task-actions">
+                        <button class="btn-edit" onclick="editCategory(${cat.id})">Editar</button>
+                        <button class="btn-delete" onclick="deleteCategory(${cat.id})">Excluir</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function editCategory(id) {
+            const categories = JSON.parse(localStorage.getItem('categories')) || [];
+            const category = categories.find(c => c.id === id);
+            
+            if (category) {
+                document.getElementById('categoryName').value = category.name;
+                document.getElementById('categoryColor').value = category.color;
+                document.getElementById('editCategoryId').value = id;
+                document.getElementById('categoryFormTitle').textContent = '✏️ Editar Categoria';
+                document.getElementById('cancelCategoryBtn').style.display = 'inline-block';
+                editingCategoryId = id;
+                
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function cancelCategoryEdit() {
+            document.getElementById('categoryForm').reset();
+            document.getElementById('categoryColor').value = '#667eea';
+            document.getElementById('editCategoryId').value = '';
+            document.getElementById('categoryFormTitle').textContent = '➕ Adicionar Nova Categoria';
+            document.getElementById('cancelCategoryBtn').style.display = 'none';
+            editingCategoryId = null;
+        }
+
+        function deleteCategory(id) {
+            if (!confirm('Tem certeza que deseja excluir esta categoria?')) return;
+            
+            const categories = JSON.parse(localStorage.getItem('categories')) || [];
+            const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+            const tasksWithCategory = tasks.filter(t => t.categoryId === id);
+            
+            if (tasksWithCategory.length > 0) {
+                const confirmDelete = confirm(`Existem ${tasksWithCategory.length} tarefa(s) associada(s) a esta categoria. As tarefas ficarão sem categoria. Continuar?`);
+                if (!confirmDelete) return;
+                
+                tasks.forEach(task => {
+                    if (task.categoryId === id) {
+                        task.categoryId = null;
+                    }
+                });
+                localStorage.setItem('tasks', JSON.stringify(tasks));
+            }
+            
+            const newCategories = categories.filter(c => c.id !== id);
+            localStorage.setItem('categories', JSON.stringify(newCategories));
+            
+            showMessage('Categoria excluída com sucesso!', 'success');
+            loadCategories();
+            loadCategoryList();
+            loadTasks();
+        }
+
+        // Gerenciamento de Tarefas
+        function handleTaskSubmit(event) {
+            event.preventDefault();
+            
+            const title = document.getElementById('taskTitle').value.trim();
+            const description = document.getElementById('taskDescription').value.trim();
+            const categoryId = document.getElementById('taskCategory').value;
+            const usuario = JSON.parse(localStorage.getItem('usuarioLogado'));
+            
+            const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+
+            if (editingTaskId) {
+                const index = tasks.findIndex(t => t.id === editingTaskId);
+                if (index !== -1) {
+                    tasks[index] = {
+                        ...tasks[index],
+                        title,
+                        description,
+                        categoryId: categoryId || null
+                    };
+                    showMessage('Tarefa atualizada com sucesso!', 'success');
+                }
+                editingTaskId = null;
+            } else {
+                const newTask = {
+                    id: Date.now(),
+                    title: title,
+                    description: description,
+                    categoryId: categoryId || null,
+                    completed: false,
+                    userEmail: usuario.email,
+                    createdAt: new Date().toISOString()
+                };
+                tasks.push(newTask);
+                showMessage('Tarefa criada com sucesso!', 'success');
+            }
+
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+            document.getElementById('taskForm').reset();
+            document.getElementById('formTitle').textContent = '➕ Adicionar Nova Tarefa';
+            document.getElementById('cancelBtn').style.display = 'none';
+            
+            loadTasks();
+        }
+
+        function loadTasks() {
+            const usuario = JSON.parse(localStorage.getItem('usuarioLogado'));
+            const allTasks = JSON.parse(localStorage.getItem('tasks')) || [];
+            const tasks = allTasks.filter(t => t.userEmail === usuario.email);
+            const categories = JSON.parse(localStorage.getItem('categories')) || [];
+            
+            let filteredTasks = tasks;
+
+            if (currentFilter === 'pending') {
+                filteredTasks = tasks.filter(t => !t.completed);
+            } else if (currentFilter === 'completed') {
+                filteredTasks = tasks.filter(t => t.completed);
+            }
+
+            if (currentCategoryFilter) {
+                filteredTasks = filteredTasks.filter(t => t.categoryId == currentCategoryFilter);
+            }
+
+            const taskList = document.getElementById('taskList');
+
+            if (filteredTasks.length === 0) {
+                taskList.innerHTML = '<div class="empty-state"><h3>Nenhuma tarefa encontrada</h3><p>Adicione sua primeira tarefa!</p></div>';
+                return;
+            }
+
+            taskList.innerHTML = filteredTasks.map(task => {
+                const category = categories.find(c => c.id == task.categoryId);
+                const categoryTag = category ? 
+                    `<span class="task-category" style="background: ${category.color}20; color: ${category.color};">${category.name}</span>` : '';
+                
+                return `
+                    <div class="task-item ${task.completed ? 'completed' : ''}">
+                        <div class="task-header">
+                            <div style="flex: 1;">
+                                <span class="task-title">${task.title}</span>
+                                ${categoryTag}
+                            </div>
+                        </div>
+                        ${task.description ? `<div class="task-description">${task.description}</div>` : ''}
+                        <div class="task-actions">
+                            ${task.completed ? 
+                                `<button class="btn-pending" onclick="toggleTaskStatus(${task.id})">Marcar Pendente</button>` :
+                                `<button class="btn-complete" onclick="toggleTaskStatus(${task.id})">Concluir</button>`
+                            }
+                            <button class="btn-edit" onclick="editTask(${task.id})">Editar</button>
+                            <button class="btn-delete" onclick="deleteTask(${task.id})">Excluir</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function editTask(id) {
+            const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+            const task = tasks.find(t => t.id === id);
+            
+            if (task) {
+                document.getElementById('taskTitle').value = task.title;
+                document.getElementById('taskDescription').value = task.description || '';
+                document.getElementById('taskCategory').value = task.categoryId || '';
+                document.getElementById('editTaskId').value = id;
+                document.getElementById('formTitle').textContent = '✏️ Editar Tarefa';
+                document.getElementById('cancelBtn').style.display = 'inline-block';
+                editingTaskId = id;
+                
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function cancelEdit() {
+            document.getElementById('taskForm').reset();
+            document.getElementById('editTaskId').value = '';
+            document.getElementById('formTitle').textContent = '➕ Adicionar Nova Tarefa';
+            document.getElementById('cancelBtn').style.display = 'none';
+            editingTaskId = null;
+        }
+
+        function deleteTask(id) {
+            if (!confirm('Tem certeza que deseja excluir esta tarefa?')) return;
+            
+            const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+            const newTasks = tasks.filter(t => t.id !== id);
+            localStorage.setItem('tasks', JSON.stringify(newTasks));
+            
+            showMessage('Tarefa excluída com sucesso!', 'success');
+            loadTasks();
+        }
+
+        function toggleTaskStatus(id) {
+            const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+            const task = tasks.find(t => t.id === id);
+            
+            if (task) {
+                task.completed = !task.completed;
+                localStorage.setItem('tasks', JSON.stringify(tasks));
+                showMessage(task.completed ? 'Tarefa concluída!' : 'Tarefa marcada como pendente!', 'success');
+                loadTasks();
+            }
+        }
+
+        function filterTasks(filter) {
+            currentFilter = filter;
+            
+            const buttons = document.querySelectorAll('.filter-btn');
+            buttons.forEach((btn, index) => {
+                btn.classList.remove('active');
+                if ((filter === 'all' && index === 0) || 
+                    (filter === 'pending' && index === 1) || 
+                    (filter === 'completed' && index === 2)) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            loadTasks();
+        }
+
+        function filterByCategory() {
+            currentCategoryFilter = document.getElementById('categoryFilter').value;
+            loadTasks();
+        }
+
+        // Verificar login ao carregar
+        window.onload = function() {
+            const usuarioLogado = JSON.parse(localStorage.getItem('usuarioLogado'));
+            if (usuarioLogado) {
+                mostrarDashboard(usuarioLogado);
+            }
+        };
+    </script>
+</body>
+</html>
