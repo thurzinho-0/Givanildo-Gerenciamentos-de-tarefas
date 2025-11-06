@@ -1,10 +1,330 @@
-// script.js - seu JavaScript separado
+// ========================================
+// GERENCIAMENTO DE TAREFAS GENIVALDO
+// Versão Premium - FINAL SEM TELEFONE
+// ========================================
+
+// Variáveis globais
 let currentFilter = 'all';
 let currentCategoryFilter = '';
 let editingTaskId = null;
 let editingCategoryId = null;
 
-// Inicializar categorias padrão
+// ========== INICIALIZAÇÃO ========== 
+window.onload = function() {
+    // Carregar tema salvo
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-theme');
+        document.getElementById('themeIcon').textContent = '☀️';
+    }
+
+    // Carregar contraste salvo
+    const savedContrast = localStorage.getItem('contrast');
+    if (savedContrast === 'high') {
+        document.body.classList.add('high-contrast');
+    }
+
+    // Verificar se há usuário logado
+    const usuarioLogado = JSON.parse(localStorage.getItem('usuarioLogado'));
+    if (usuarioLogado) {
+        mostrarDashboard(usuarioLogado);
+    }
+};
+
+// ========== TEMA CLARO/ESCURO ==========
+function toggleTheme() {
+    document.body.classList.toggle('dark-theme');
+    const isDark = document.body.classList.contains('dark-theme');
+    document.getElementById('themeIcon').textContent = isDark ? '☀️' : '🌙';
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+}
+
+// ========== ALTO CONTRASTE ==========
+function toggleContrast() {
+    document.body.classList.toggle('high-contrast');
+    const isHighContrast = document.body.classList.contains('high-contrast');
+    localStorage.setItem('contrast', isHighContrast ? 'high' : 'normal');
+    showMessage(
+        isHighContrast ? '✅ Alto contraste ativado' : '✅ Contraste normal ativado',
+        'success'
+    );
+}
+
+// ========== VALIDAÇÃO DE E-MAIL EM TEMPO REAL ==========
+function validateEmailRealTime(input, iconId, hintId) {
+    const email = input.value;
+    const icon = document.getElementById(iconId);
+    const hint = document.getElementById(hintId);
+    
+    if (!icon || !hint) return;
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (email.length === 0) {
+        icon.textContent = '';
+        hint.textContent = '';
+        return;
+    }
+
+    if (emailRegex.test(email)) {
+        icon.textContent = '✅';
+        icon.style.color = '#10b981';
+        hint.textContent = '';
+    } else {
+        icon.textContent = '❌';
+        icon.style.color = '#ef4444';
+        hint.textContent = 'E-mail inválido';
+    }
+}
+
+// ========== MOSTRAR/OCULTAR SENHA ==========
+function togglePasswordVisibility(inputId, button) {
+    const input = document.getElementById(inputId);
+    
+    if (!input) return;
+    
+    if (input.type === 'password') {
+        input.type = 'text';
+        button.textContent = '🙈';
+        button.setAttribute('aria-label', 'Ocultar senha');
+    } else {
+        input.type = 'password';
+        button.textContent = '👁️';
+        button.setAttribute('aria-label', 'Mostrar senha');
+    }
+}
+
+// ========== VALIDAÇÃO DE FORÇA DA SENHA ==========
+function validatePasswordStrength(input) {
+    const password = input.value;
+    const strengthDiv = document.getElementById('passwordStrength');
+    
+    if (!strengthDiv) return;
+    
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    
+    let strength = 0;
+    if (password.length >= 6) strength++;
+    if (password.length >= 10) strength++;
+    if (hasUpperCase) strength++;
+    if (hasNumber) strength++;
+    if (hasSpecial) strength++;
+
+    strengthDiv.className = 'password-strength';
+    
+    if (strength >= 4) {
+        strengthDiv.classList.add('strong');
+    } else if (strength >= 2) {
+        strengthDiv.classList.add('medium');
+    } else if (password.length > 0) {
+        strengthDiv.classList.add('weak');
+    }
+}
+
+// ========== VALIDAR SENHAS IGUAIS ==========
+function validatePasswordMatch() {
+    const password = document.getElementById('cadastroPassword').value;
+    const confirmPassword = document.getElementById('cadastroConfirmPassword').value;
+    const hint = document.getElementById('passwordMatchHint');
+
+    if (!hint) return;
+
+    if (confirmPassword.length === 0) {
+        hint.textContent = '';
+        hint.style.color = '';
+        return;
+    }
+
+    if (password === confirmPassword) {
+        hint.textContent = '✅ Senhas coincidem';
+        hint.style.color = '#10b981';
+    } else {
+        hint.textContent = '❌ As senhas não coincidem';
+        hint.style.color = '#ef4444';
+    }
+}
+
+// ========== MOSTRAR LOADING ==========
+function showLoading() {
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    if (loadingOverlay) {
+        loadingOverlay.classList.remove('hidden');
+    }
+}
+
+function hideLoading() {
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    if (loadingOverlay) {
+        loadingOverlay.classList.add('hidden');
+    }
+}
+
+// ========== MENSAGENS PERSONALIZADAS ==========
+function showMessage(text, type) {
+    const messageDiv = document.getElementById('message');
+    if (!messageDiv) return;
+    
+    messageDiv.textContent = text;
+    messageDiv.className = 'message ' + type;
+    
+    setTimeout(() => {
+        messageDiv.className = 'message';
+    }, 4000);
+}
+
+// ========== CADASTRO (SEM TELEFONE) ==========
+function handleCadastro(event) {
+    event.preventDefault();
+    showLoading();
+    
+    const nome = document.getElementById('cadastroNome').value;
+    const email = document.getElementById('cadastroEmail').value;
+    const password = document.getElementById('cadastroPassword').value;
+    const confirmPassword = document.getElementById('cadastroConfirmPassword').value;
+
+    // Validações
+    if (password !== confirmPassword) {
+        hideLoading();
+        showMessage('❌ Ops! As senhas não coincidem. Tente novamente.', 'error');
+        return;
+    }
+
+    if (password.length < 6) {
+        hideLoading();
+        showMessage('❌ A senha deve ter no mínimo 6 caracteres!', 'error');
+        return;
+    }
+
+    // Validar senha forte
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+    if (!hasUpperCase || !hasNumber || !hasSpecial) {
+        hideLoading();
+        showMessage('❌ A senha deve conter: 1 letra maiúscula, 1 número e 1 caractere especial', 'error');
+        return;
+    }
+
+    const usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+    const usuarioExiste = usuarios.find(u => u.email === email);
+
+    if (usuarioExiste) {
+        hideLoading();
+        showMessage('❌ Este e-mail já está cadastrado! Tente fazer login.', 'error');
+        return;
+    }
+
+    const novoUsuario = {
+        nome: nome,
+        email: email,
+        password: password
+    };
+
+    usuarios.push(novoUsuario);
+    localStorage.setItem('usuarios', JSON.stringify(usuarios));
+
+    hideLoading();
+    showMessage('🎉 Cadastro realizado com sucesso! Bem-vindo(a)!', 'success');
+    
+    // Limpar formulário
+    document.getElementById('cadastroNome').value = '';
+    document.getElementById('cadastroEmail').value = '';
+    document.getElementById('cadastroPassword').value = '';
+    document.getElementById('cadastroConfirmPassword').value = '';
+    
+    // Limpar validações
+    const passwordStrength = document.getElementById('passwordStrength');
+    const passwordMatchHint = document.getElementById('passwordMatchHint');
+    const cadastroEmailIcon = document.getElementById('cadastroEmailIcon');
+    const cadastroEmailHint = document.getElementById('cadastroEmailHint');
+    
+    if (passwordStrength) passwordStrength.className = 'password-strength';
+    if (passwordMatchHint) passwordMatchHint.textContent = '';
+    if (cadastroEmailIcon) cadastroEmailIcon.textContent = '';
+    if (cadastroEmailHint) cadastroEmailHint.textContent = '';
+
+    // Voltar para o login
+    setTimeout(() => {
+        const formToggle = document.getElementById('formToggle');
+        if (formToggle) {
+            formToggle.checked = false;
+        }
+    }, 2000);
+}
+
+// ========== LOGIN ==========
+function handleLogin(event) {
+    event.preventDefault();
+    showLoading();
+    
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+
+    const usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+    const usuario = usuarios.find(u => u.email === email && u.password === password);
+
+    if (!usuario) {
+        hideLoading();
+        showMessage('❌ Ops! E-mail ou senha incorretos. Tente novamente.', 'error');
+        return;
+    }
+
+    localStorage.setItem('usuarioLogado', JSON.stringify(usuario));
+    
+    hideLoading();
+    showMessage(`🎉 Bem-vindo(a) de volta, ${usuario.nome.split(' ')[0]}!`, 'success');
+
+    setTimeout(() => {
+        mostrarDashboard(usuario);
+    }, 1500);
+}
+
+// ========== MOSTRAR DASHBOARD ==========
+function mostrarDashboard(usuario) {
+    const authWrapper = document.getElementById('authWrapper');
+    const dashboard = document.getElementById('dashboard');
+    
+    if (authWrapper) authWrapper.classList.add('hidden');
+    if (dashboard) dashboard.classList.remove('hidden');
+
+    const userName = document.getElementById('userName');
+    const userEmail = document.getElementById('userEmail');
+    
+    if (userName) userName.textContent = usuario.nome;
+    if (userEmail) userEmail.textContent = usuario.email;
+
+    initDefaultCategories();
+    loadCategories();
+    loadTasks();
+    updateProgressBar();
+}
+
+// ========== LOGOUT ==========
+function handleLogout() {
+    const confirmLogout = confirm('Tem certeza que deseja sair?');
+    if (!confirmLogout) return;
+
+    localStorage.removeItem('usuarioLogado');
+    
+    const dashboard = document.getElementById('dashboard');
+    const authWrapper = document.getElementById('authWrapper');
+    
+    if (dashboard) dashboard.classList.add('hidden');
+    if (authWrapper) authWrapper.classList.remove('hidden');
+    
+    const loginEmail = document.getElementById('loginEmail');
+    const loginPassword = document.getElementById('loginPassword');
+    
+    if (loginEmail) loginEmail.value = '';
+    if (loginPassword) loginPassword.value = '';
+    
+    showMessage('👋 Você saiu do sistema. Até logo!', 'success');
+}
+
+// ========== INICIALIZAR CATEGORIAS PADRÃO ==========
 function initDefaultCategories() {
     const categories = JSON.parse(localStorage.getItem('categories')) || [];
     if (categories.length === 0) {
@@ -17,167 +337,70 @@ function initDefaultCategories() {
     }
 }
 
-// Alternar entre login e cadastro
-function toggleForm() {
-    const loginForm = document.getElementById('loginForm');
-    const cadastroForm = document.getElementById('cadastroForm');
-    
-    loginForm.classList.toggle('hidden');
-    cadastroForm.classList.toggle('hidden');
-    hideMessage();
-}
-
-// Mostrar mensagens
-function showMessage(text, type) {
-    const messageDiv = document.getElementById('message');
-    messageDiv.textContent = text;
-    messageDiv.className = 'message ' + type;
-    
-    setTimeout(() => {
-        hideMessage();
-    }, 3000);
-}
-function hideMessage() {
-    const messageDiv = document.getElementById('message');
-    messageDiv.className = 'message';
-}
-
-// Cadastro
-function handleCadastro(event) {
-    event.preventDefault();
-    
-    const nome = document.getElementById('cadastroNome').value;
-    const email = document.getElementById('cadastroEmail').value;
-    const telefone = document.getElementById('cadastroTelefone').value;
-    const password = document.getElementById('cadastroPassword').value;
-    const confirmPassword = document.getElementById('cadastroConfirmPassword').value;
-
-    if (password !== confirmPassword) {
-        showMessage('As senhas não coincidem!', 'error');
-        return;
-    }
-    if (password.length < 6) {
-        showMessage('A senha deve ter no mínimo 6 caracteres!', 'error');
-        return;
-    }
-    const usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
-    const usuarioExiste = usuarios.find(u => u.email === email);
-
-    if (usuarioExiste) {
-        showMessage('Este e-mail já está cadastrado!', 'error');
-        return;
-    }
-
-    const novoUsuario = {
-        nome: nome,
-        email: email,
-        telefone: telefone,
-        password: password
-    };
-
-    usuarios.push(novoUsuario);
-    localStorage.setItem('usuarios', JSON.stringify(usuarios));
-
-    showMessage('Cadastro realizado com sucesso!', 'success');
-    
-    document.getElementById('cadastroNome').value = '';
-    document.getElementById('cadastroEmail').value = '';
-    document.getElementById('cadastroTelefone').value = '';
-    document.getElementById('cadastroPassword').value = '';
-    document.getElementById('cadastroConfirmPassword').value = '';
-
-    setTimeout(() => {
-        toggleForm();
-    }, 2000);
-}
-
-// Login
-function handleLogin(event) {
-    event.preventDefault();
-    
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
-
-    const usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
-    const usuario = usuarios.find(u => u.email === email && u.password === password);
-
-    if (!usuario) {
-        showMessage('E-mail ou senha incorretos!', 'error');
-        return;
-    }
-
-    localStorage.setItem('usuarioLogado', JSON.stringify(usuario));
-    showMessage('Login realizado com sucesso!', 'success');
-
-    setTimeout(() => {
-        mostrarDashboard(usuario);
-    }, 1000);
-}
-
-// Mostrar Dashboard
-function mostrarDashboard(usuario) {
-    document.getElementById('loginForm').classList.add('hidden');
-    document.getElementById('cadastroForm').classList.add('hidden');
-    document.getElementById('dashboard').classList.remove('hidden');
-
-    document.getElementById('userName').textContent = usuario.nome;
-    document.getElementById('userEmail').textContent = usuario.email;
-
-    initDefaultCategories();
-    loadCategories();
-    loadTasks();
-}
-
-// Logout
-function handleLogout() {
-    localStorage.removeItem('usuarioLogado');
-    
-    document.getElementById('dashboard').classList.add('hidden');
-    document.getElementById('loginForm').classList.remove('hidden');
-    
-    document.getElementById('loginEmail').value = '';
-    document.getElementById('loginPassword').value = '';
-    
-    showMessage('Você saiu do sistema!', 'success');
-}
-
-// Alternar entre abas
+// ========== ALTERNAR ABAS ==========
 function switchTab(tab) {
     const tabs = document.querySelectorAll('.tab');
     tabs.forEach(t => t.classList.remove('active'));
     
+    const tarefasSection = document.getElementById('tarefasSection');
+    const categoriasSection = document.getElementById('categoriasSection');
+    
     if (tab === 'tarefas') {
-        document.getElementById('tarefasSection').classList.remove('hidden');
-        document.getElementById('categoriasSection').classList.add('hidden');
-        tabs[0].classList.add('active');
+        if (tarefasSection) tarefasSection.classList.remove('hidden');
+        if (categoriasSection) categoriasSection.classList.add('hidden');
+        if (tabs[0]) tabs[0].classList.add('active');
     } else {
-        document.getElementById('tarefasSection').classList.add('hidden');
-        document.getElementById('categoriasSection').classList.remove('hidden');
-        tabs[1].classList.add('active');
+        if (tarefasSection) tarefasSection.classList.add('hidden');
+        if (categoriasSection) categoriasSection.classList.remove('hidden');
+        if (tabs[1]) tabs[1].classList.add('active');
         loadCategoryList();
     }
 }
 
-// Gerenciamento de Categorias
+// ========== ATUALIZAR BARRA DE PROGRESSO ==========
+function updateProgressBar() {
+    const usuario = JSON.parse(localStorage.getItem('usuarioLogado'));
+    if (!usuario) return;
+    
+    const allTasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    const tasks = allTasks.filter(t => t.userEmail === usuario.email);
+    
+    const totalTasks = tasks.length;
+    const completedTasks = tasks.filter(t => t.completed).length;
+    const percentage = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
+    
+    const progressFill = document.getElementById('progressFill');
+    const progressStats = document.getElementById('progressStats');
+    
+    if (progressFill) progressFill.style.width = percentage + '%';
+    if (progressStats) progressStats.textContent = `${completedTasks}/${totalTasks} concluídas`;
+}
+
+// ========== GERENCIAR CATEGORIAS ==========
 function loadCategories() {
     const categories = JSON.parse(localStorage.getItem('categories')) || [];
     const taskCategorySelect = document.getElementById('taskCategory');
     const categoryFilter = document.getElementById('categoryFilter');
     
-    taskCategorySelect.innerHTML = '<option value="">Sem categoria</option>';
-    categoryFilter.innerHTML = '<option value="">Todas as Categorias</option>';
+    if (taskCategorySelect) {
+        taskCategorySelect.innerHTML = '<option value="">Sem categoria</option>';
+        categories.forEach(cat => {
+            const option = document.createElement('option');
+            option.value = cat.id;
+            option.textContent = cat.name;
+            taskCategorySelect.appendChild(option);
+        });
+    }
     
-    categories.forEach(cat => {
-        const option1 = document.createElement('option');
-        option1.value = cat.id;
-        option1.textContent = cat.name;
-        taskCategorySelect.appendChild(option1);
-
-        const option2 = document.createElement('option');
-        option2.value = cat.id;
-        option2.textContent = cat.name;
-        categoryFilter.appendChild(option2);
-    });
+    if (categoryFilter) {
+        categoryFilter.innerHTML = '<option value="">Todas as Categorias</option>';
+        categories.forEach(cat => {
+            const option = document.createElement('option');
+            option.value = cat.id;
+            option.textContent = cat.name;
+            categoryFilter.appendChild(option);
+        });
+    }
 }
 
 function handleCategorySubmit(event) {
@@ -192,17 +415,17 @@ function handleCategorySubmit(event) {
         if (index !== -1) {
             const duplicate = categories.find(c => c.name.toLowerCase() === name.toLowerCase() && c.id !== editingCategoryId);
             if (duplicate) {
-                showMessage('Já existe uma categoria com este nome!', 'error');
+                showMessage('❌ Já existe uma categoria com este nome!', 'error');
                 return;
             }
             categories[index] = { ...categories[index], name, color };
-            showMessage('Categoria atualizada com sucesso!', 'success');
+            showMessage('✅ Categoria atualizada com sucesso!', 'success');
         }
         editingCategoryId = null;
     } else {
         const duplicate = categories.find(c => c.name.toLowerCase() === name.toLowerCase());
         if (duplicate) {
-            showMessage('Já existe uma categoria com este nome!', 'error');
+            showMessage('❌ Já existe uma categoria com este nome!', 'error');
             return;
         }
         const newCategory = {
@@ -211,14 +434,20 @@ function handleCategorySubmit(event) {
             color: color
         };
         categories.push(newCategory);
-        showMessage('Categoria criada com sucesso!', 'success');
+        showMessage('✅ Categoria criada com sucesso!', 'success');
     }
 
     localStorage.setItem('categories', JSON.stringify(categories));
-    document.getElementById('categoryForm').reset();
-    document.getElementById('categoryColor').value = '#667eea';
-    document.getElementById('categoryFormTitle').textContent = '➕ Adicionar Nova Categoria';
-    document.getElementById('cancelCategoryBtn').style.display = 'none';
+    
+    const categoryForm = document.getElementById('categoryForm');
+    const categoryColor = document.getElementById('categoryColor');
+    const categoryFormTitle = document.getElementById('categoryFormTitle');
+    const cancelCategoryBtn = document.getElementById('cancelCategoryBtn');
+    
+    if (categoryForm) categoryForm.reset();
+    if (categoryColor) categoryColor.value = '#667eea';
+    if (categoryFormTitle) categoryFormTitle.textContent = '➕ Adicionar Nova Categoria';
+    if (cancelCategoryBtn) cancelCategoryBtn.style.display = 'none';
     
     loadCategories();
     loadCategoryList();
@@ -227,6 +456,8 @@ function handleCategorySubmit(event) {
 function loadCategoryList() {
     const categories = JSON.parse(localStorage.getItem('categories')) || [];
     const categoryList = document.getElementById('categoryList');
+    
+    if (!categoryList) return;
     
     if (categories.length === 0) {
         categoryList.innerHTML = '<div class="empty-state"><h3>Nenhuma categoria criada</h3><p>Crie sua primeira categoria!</p></div>';
@@ -252,23 +483,32 @@ function editCategory(id) {
     const category = categories.find(c => c.id === id);
     
     if (category) {
-        document.getElementById('categoryName').value = category.name;
-        document.getElementById('categoryColor').value = category.color;
-        document.getElementById('editCategoryId').value = id;
-        document.getElementById('categoryFormTitle').textContent = '✏️ Editar Categoria';
-        document.getElementById('cancelCategoryBtn').style.display = 'inline-block';
-        editingCategoryId = id;
+        const categoryName = document.getElementById('categoryName');
+        const categoryColor = document.getElementById('categoryColor');
+        const categoryFormTitle = document.getElementById('categoryFormTitle');
+        const cancelCategoryBtn = document.getElementById('cancelCategoryBtn');
         
+        if (categoryName) categoryName.value = category.name;
+        if (categoryColor) categoryColor.value = category.color;
+        if (categoryFormTitle) categoryFormTitle.textContent = '✏️ Editar Categoria';
+        if (cancelCategoryBtn) cancelCategoryBtn.style.display = 'inline-block';
+        
+        editingCategoryId = id;
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 }
 
 function cancelCategoryEdit() {
-    document.getElementById('categoryForm').reset();
-    document.getElementById('categoryColor').value = '#667eea';
-    document.getElementById('editCategoryId').value = '';
-    document.getElementById('categoryFormTitle').textContent = '➕ Adicionar Nova Categoria';
-    document.getElementById('cancelCategoryBtn').style.display = 'none';
+    const categoryForm = document.getElementById('categoryForm');
+    const categoryColor = document.getElementById('categoryColor');
+    const categoryFormTitle = document.getElementById('categoryFormTitle');
+    const cancelCategoryBtn = document.getElementById('cancelCategoryBtn');
+    
+    if (categoryForm) categoryForm.reset();
+    if (categoryColor) categoryColor.value = '#667eea';
+    if (categoryFormTitle) categoryFormTitle.textContent = '➕ Adicionar Nova Categoria';
+    if (cancelCategoryBtn) cancelCategoryBtn.style.display = 'none';
+    
     editingCategoryId = null;
 }
 
@@ -294,13 +534,13 @@ function deleteCategory(id) {
     const newCategories = categories.filter(c => c.id !== id);
     localStorage.setItem('categories', JSON.stringify(newCategories));
     
-    showMessage('Categoria excluída com sucesso!', 'success');
+    showMessage('✅ Categoria excluída com sucesso!', 'success');
     loadCategories();
     loadCategoryList();
     loadTasks();
 }
 
-// Gerenciamento de Tarefas
+// ========== GERENCIAMENTO DE TAREFAS ==========
 function handleTaskSubmit(event) {
     event.preventDefault();
     
@@ -308,6 +548,8 @@ function handleTaskSubmit(event) {
     const description = document.getElementById('taskDescription').value.trim();
     const categoryId = document.getElementById('taskCategory').value;
     const usuario = JSON.parse(localStorage.getItem('usuarioLogado'));
+    
+    if (!usuario) return;
     
     const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
 
@@ -320,7 +562,7 @@ function handleTaskSubmit(event) {
                 description,
                 categoryId: categoryId || null
             };
-            showMessage('Tarefa atualizada com sucesso!', 'success');
+            showMessage('✅ Tarefa atualizada com sucesso!', 'success');
         }
         editingTaskId = null;
     } else {
@@ -334,19 +576,27 @@ function handleTaskSubmit(event) {
             createdAt: new Date().toISOString()
         };
         tasks.push(newTask);
-        showMessage('Tarefa criada com sucesso!', 'success');
+        showMessage('✅ Tarefa criada com sucesso!', 'success');
     }
 
     localStorage.setItem('tasks', JSON.stringify(tasks));
-    document.getElementById('taskForm').reset();
-    document.getElementById('formTitle').textContent = '➕ Adicionar Nova Tarefa';
-    document.getElementById('cancelBtn').style.display = 'none';
+    
+    const taskForm = document.getElementById('taskForm');
+    const formTitle = document.getElementById('formTitle');
+    const cancelBtn = document.getElementById('cancelBtn');
+    
+    if (taskForm) taskForm.reset();
+    if (formTitle) formTitle.textContent = '➕ Adicionar Nova Tarefa';
+    if (cancelBtn) cancelBtn.style.display = 'none';
     
     loadTasks();
+    updateProgressBar();
 }
 
 function loadTasks() {
     const usuario = JSON.parse(localStorage.getItem('usuarioLogado'));
+    if (!usuario) return;
+    
     const allTasks = JSON.parse(localStorage.getItem('tasks')) || [];
     const tasks = allTasks.filter(t => t.userEmail === usuario.email);
     const categories = JSON.parse(localStorage.getItem('categories')) || [];
@@ -364,6 +614,7 @@ function loadTasks() {
     }
 
     const taskList = document.getElementById('taskList');
+    if (!taskList) return;
 
     if (filteredTasks.length === 0) {
         taskList.innerHTML = '<div class="empty-state"><h3>Nenhuma tarefa encontrada</h3><p>Adicione sua primeira tarefa!</p></div>';
@@ -376,7 +627,7 @@ function loadTasks() {
             `<span class="task-category" style="background: ${category.color}20; color: ${category.color};">${category.name}</span>` : '';
         
         return `
-            <div class="task-item ${task.completed ? 'completed' : ''}">
+            <div class="task-item ${task.completed ? 'completed' : ''}" draggable="true" ondragstart="dragStart(event)" ondragover="dragOver(event)" ondrop="drop(event)" data-id="${task.id}">
                 <div class="task-header">
                     <div style="flex: 1;">
                         <span class="task-title">${task.title}</span>
@@ -402,23 +653,32 @@ function editTask(id) {
     const task = tasks.find(t => t.id === id);
     
     if (task) {
-        document.getElementById('taskTitle').value = task.title;
-        document.getElementById('taskDescription').value = task.description || '';
-        document.getElementById('taskCategory').value = task.categoryId || '';
-        document.getElementById('editTaskId').value = id;
-        document.getElementById('formTitle').textContent = '✏️ Editar Tarefa';
-        document.getElementById('cancelBtn').style.display = 'inline-block';
-        editingTaskId = id;
+        const taskTitle = document.getElementById('taskTitle');
+        const taskDescription = document.getElementById('taskDescription');
+        const taskCategory = document.getElementById('taskCategory');
+        const formTitle = document.getElementById('formTitle');
+        const cancelBtn = document.getElementById('cancelBtn');
         
+        if (taskTitle) taskTitle.value = task.title;
+        if (taskDescription) taskDescription.value = task.description || '';
+        if (taskCategory) taskCategory.value = task.categoryId || '';
+        if (formTitle) formTitle.textContent = '✏️ Editar Tarefa';
+        if (cancelBtn) cancelBtn.style.display = 'inline-block';
+        
+        editingTaskId = id;
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 }
 
 function cancelEdit() {
-    document.getElementById('taskForm').reset();
-    document.getElementById('editTaskId').value = '';
-    document.getElementById('formTitle').textContent = '➕ Adicionar Nova Tarefa';
-    document.getElementById('cancelBtn').style.display = 'none';
+    const taskForm = document.getElementById('taskForm');
+    const formTitle = document.getElementById('formTitle');
+    const cancelBtn = document.getElementById('cancelBtn');
+    
+    if (taskForm) taskForm.reset();
+    if (formTitle) formTitle.textContent = '➕ Adicionar Nova Tarefa';
+    if (cancelBtn) cancelBtn.style.display = 'none';
+    
     editingTaskId = null;
 }
 
@@ -429,8 +689,9 @@ function deleteTask(id) {
     const newTasks = tasks.filter(t => t.id !== id);
     localStorage.setItem('tasks', JSON.stringify(newTasks));
     
-    showMessage('Tarefa excluída com sucesso!', 'success');
+    showMessage('✅ Tarefa excluída com sucesso!', 'success');
     loadTasks();
+    updateProgressBar();
 }
 
 function toggleTaskStatus(id) {
@@ -440,8 +701,9 @@ function toggleTaskStatus(id) {
     if (task) {
         task.completed = !task.completed;
         localStorage.setItem('tasks', JSON.stringify(tasks));
-        showMessage(task.completed ? 'Tarefa concluída!' : 'Tarefa marcada como pendente!', 'success');
+        showMessage(task.completed ? '✅ Tarefa concluída!' : '🔄 Tarefa marcada como pendente!', 'success');
         loadTasks();
+        updateProgressBar();
     }
 }
 
@@ -462,14 +724,31 @@ function filterTasks(filter) {
 }
 
 function filterByCategory() {
-    currentCategoryFilter = document.getElementById('categoryFilter').value;
-    loadTasks();
+    const categoryFilter = document.getElementById('categoryFilter');
+    if (categoryFilter) {
+        currentCategoryFilter = categoryFilter.value;
+        loadTasks();
+    }
 }
 
-// Verificar login ao carregar
-window.onload = function() {
-    const usuarioLogado = JSON.parse(localStorage.getItem('usuarioLogado'));
-    if (usuarioLogado) {
-        mostrarDashboard(usuarioLogado);
+// ========== DRAG AND DROP ==========
+let draggedElement = null;
+
+function dragStart(event) {
+    draggedElement = event.target;
+    event.target.style.opacity = '0.5';
+}
+
+function dragOver(event) {
+    event.preventDefault();
+}
+
+function drop(event) {
+    event.preventDefault();
+    if (event.target.classList.contains('task-item') && event.target !== draggedElement) {
+        event.target.parentNode.insertBefore(draggedElement, event.target.nextSibling);
     }
-};
+    if (draggedElement) {
+        draggedElement.style.opacity = '1';
+    }
+}
