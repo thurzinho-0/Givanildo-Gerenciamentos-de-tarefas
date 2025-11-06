@@ -3,156 +3,273 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema Genivaldo - Gerenciamento de Tarefas</title>
+    <title>Gerenciamento de Tarefas Genivaldo</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- Botões de Acessibilidade -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="Alternar Tema" aria-label="Alternar tema">
+        <span class="theme-icon" id="themeIcon">🌙</span>
+    </button>
+
+    <button class="contrast-toggle" onclick="toggleContrast()" title="Alto Contraste" aria-label="Alto contraste">
+        <span>◐</span>
+    </button>
+
     <div class="container">
-        <div class="form-container">
-            <!-- Formulário de Login -->
-            <div class="form-box" id="loginForm">
-                <h2>🔐 Login - Sistema Genivaldo</h2>
-                <form onsubmit="handleLogin(event)">
-                    <div class="input-group">
-                        <label for="loginEmail">E-mail</label>
-                        <input type="email" id="loginEmail" required placeholder="Digite seu e-mail">
+        <!-- Área de Login/Cadastro -->
+        <div class="wrapper" id="authWrapper">
+            <div class="card-switch">
+                <label class="switch">
+                    <input type="checkbox" class="toggle" id="formToggle">
+                    <span class="slider"></span>
+                    <span class="card-side"></span>
+                    
+                    <div class="flip-card__inner">
+                        <!-- LOGIN -->
+                        <div class="flip-card__front">
+                            <div class="title">🔐 Entrar</div>
+                            <form class="flip-card__form" onsubmit="handleLogin(event)">
+                                
+                                <div class="form-field">
+                                    <input 
+                                        class="flip-card__input" 
+                                        id="loginEmail" 
+                                        placeholder="seu@email.com" 
+                                        type="email" 
+                                        required
+                                        autocomplete="email"
+                                        oninput="validateEmailRealTime(this, 'loginEmailIcon', 'loginEmailHint')">
+                                    <span class="validation-icon" id="loginEmailIcon"></span>
+                                </div>
+                                <span class="input-hint" id="loginEmailHint"></span>
+
+                                <div class="form-field form-field-password">
+                                    <input 
+                                        class="flip-card__input" 
+                                        id="loginPassword" 
+                                        placeholder="••••••••" 
+                                        type="password" 
+                                        required
+                                        autocomplete="current-password"
+                                        minlength="6">
+                                    <button 
+                                        type="button" 
+                                        class="eye-btn" 
+                                        onclick="togglePasswordVisibility('loginPassword', this)" 
+                                        aria-label="Mostrar senha"
+                                        tabindex="-1">
+                                        👁️
+                                    </button>
+                                </div>
+
+                                <button class="flip-card__btn" type="submit">Vamos lá! 🚀</button>
+                            </form>
+                        </div>
+
+                        <!-- CADASTRO (SEM TELEFONE) -->
+                        <div class="flip-card__back">
+                            <div class="title">📝 Cadastrar</div>
+                            <form class="flip-card__form" onsubmit="handleCadastro(event)">
+                                
+                                <!-- Nome Completo -->
+                                <div class="form-field">
+                                    <input 
+                                        class="flip-card__input" 
+                                        id="cadastroNome" 
+                                        placeholder="Nome Completo" 
+                                        type="text" 
+                                        required
+                                        autocomplete="name">
+                                </div>
+
+                                <!-- E-mail -->
+                                <div class="form-field">
+                                    <input 
+                                        class="flip-card__input" 
+                                        id="cadastroEmail" 
+                                        placeholder="seu@email.com" 
+                                        type="email" 
+                                        required
+                                        autocomplete="email"
+                                        oninput="validateEmailRealTime(this, 'cadastroEmailIcon', 'cadastroEmailHint')">
+                                    <span class="validation-icon" id="cadastroEmailIcon"></span>
+                                </div>
+                                <span class="input-hint" id="cadastroEmailHint"></span>
+
+                                <!-- Senha -->
+                                <div class="form-field form-field-password">
+                                    <input 
+                                        class="flip-card__input" 
+                                        id="cadastroPassword" 
+                                        placeholder="Senha Segura" 
+                                        type="password" 
+                                        required
+                                        autocomplete="new-password"
+                                        minlength="6"
+                                        oninput="validatePasswordStrength(this)">
+                                    <button 
+                                        type="button" 
+                                        class="eye-btn" 
+                                        onclick="togglePasswordVisibility('cadastroPassword', this)" 
+                                        aria-label="Mostrar senha"
+                                        tabindex="-1">
+                                        👁️
+                                    </button>
+                                </div>
+                                <div class="password-strength" id="passwordStrength"></div>
+
+                                <!-- Confirmar Senha -->
+                                <div class="form-field form-field-password">
+                                    <input 
+                                        class="flip-card__input" 
+                                        id="cadastroConfirmPassword" 
+                                        placeholder="Confirmar Senha" 
+                                        type="password" 
+                                        required
+                                        autocomplete="new-password"
+                                        minlength="6"
+                                        oninput="validatePasswordMatch()">
+                                    <button 
+                                        type="button" 
+                                        class="eye-btn" 
+                                        onclick="togglePasswordVisibility('cadastroConfirmPassword', this)" 
+                                        aria-label="Mostrar senha"
+                                        tabindex="-1">
+                                        👁️
+                                    </button>
+                                </div>
+                                <span class="input-hint" id="passwordMatchHint"></span>
+
+                                <button class="flip-card__btn" type="submit">Confirmar! ✅</button>
+                            </form>
+                        </div>
                     </div>
-                    <div class="input-group">
-                        <label for="loginPassword">Senha</label>
-                        <input type="password" id="loginPassword" required placeholder="Digite sua senha">
-                    </div>
-                    <button type="submit" class="btn-primary">Entrar</button>
-                    <p class="toggle-form">
-                        Não tem conta? <a href="#" onclick="toggleForm(); return false;">Cadastre-se</a>
-                    </p>
-                </form>
+                </label>
+            </div>   
+        </div>
+
+        <!-- DASHBOARD -->
+        <div class="dashboard hidden" id="dashboard">
+            <div class="dashboard-header">
+                <h2>📋 Gerenciamento de Tarefas Genivaldo</h2>
+                <button onclick="handleLogout()" class="btn-logout">Sair 🚪</button>
             </div>
 
-            <!-- Formulário de Cadastro -->
-            <div class="form-box hidden" id="cadastroForm">
-                <h2>📝 Cadastro - Sistema Genivaldo</h2>
-                <form onsubmit="handleCadastro(event)">
-                    <div class="input-group">
-                        <label for="cadastroNome">Nome Completo</label>
-                        <input type="text" id="cadastroNome" required placeholder="Digite seu nome completo">
+            <div class="user-info">
+                <div class="profile-section">
+                    <img src="Givanildo.jpg" alt="Foto de Perfil" class="perfil-img">
+                    <div class="user-details">
+                        <div class="user-name">
+                            <strong>👤 Usuário:</strong> <span id="userName"></span>
+                        </div>
+                        <div class="user-email">
+                            <strong>📧 E-mail:</strong> <span id="userEmail"></span>
+                        </div>
                     </div>
-                    <div class="input-group">
-                        <label for="cadastroEmail">E-mail</label>
-                        <input type="email" id="cadastroEmail" required placeholder="Digite seu e-mail">
-                    </div>
-                    <div class="input-group">
-                        <label for="cadastroTelefone">Telefone</label>
-                        <input type="tel" id="cadastroTelefone" placeholder="(00) 00000-0000">
-                    </div>
-                    <div class="input-group">
-                        <label for="cadastroPassword">Senha</label>
-                        <input type="password" id="cadastroPassword" required placeholder="Mínimo 6 caracteres" minlength="6">
-                    </div>
-                    <div class="input-group">
-                        <label for="cadastroConfirmPassword">Confirmar Senha</label>
-                        <input type="password" id="cadastroConfirmPassword" required placeholder="Confirme sua senha">
-                    </div>
-                    <button type="submit" class="btn-primary">Cadastrar</button>
-                    <p class="toggle-form">
-                        Já tem conta? <a href="#" onclick="toggleForm(); return false;">Fazer Login</a>
-                    </p>
-                </form>
+                </div>
             </div>
 
-            <!-- Dashboard Principal -->
-            <div class="dashboard hidden" id="dashboard">
-                <div class="dashboard-header">
-                    <h2>📋 Sistema de Gerenciamento de Tarefas</h2>
-                    <button onclick="handleLogout()" class="btn-logout">Sair</button>
+            <div class="progress-container">
+                <div class="progress-info">
+                    <span class="progress-label">📊 Progresso das Tarefas</span>
+                    <span class="progress-stats" id="progressStats">0/0 concluídas</span>
                 </div>
-
-                <div class="user-info">
-                    <strong>👤 Usuário:</strong> <span id="userName"></span> | 
-                    <strong>📧 E-mail:</strong> <span id="userEmail"></span>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
                 </div>
+            </div>
 
-                <!-- Abas -->
-                <div class="tabs">
-                    <button class="tab active" onclick="switchTab('tarefas')">📝 Tarefas</button>
-                    <button class="tab" onclick="switchTab('categorias')">🏷️ Categorias</button>
-                </div>
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('tarefas')">📝 Tarefas</button>
+                <button class="tab" onclick="switchTab('categorias')">🏷️ Categorias</button>
+            </div>
 
-                <!-- Seção de Tarefas -->
-                <div id="tarefasSection" class="task-section">
-                    <!-- Formulário de Adicionar/Editar Tarefa -->
-                    <div class="task-form">
-                        <h3 id="formTitle">➕ Adicionar Nova Tarefa</h3>
-                        <form onsubmit="handleTaskSubmit(event)" id="taskForm">
-                            <input type="hidden" id="editTaskId">
+            <div id="tarefasSection" class="task-section">
+                <div class="task-form">
+                    <h3 id="formTitle">➕ Adicionar Nova Tarefa</h3>
+                    <form onsubmit="handleTaskSubmit(event)" id="taskForm">
+                        <input type="hidden" id="editTaskId">
+                        
+                        <div class="input-group">
+                            <label for="taskTitle">Título da Tarefa *</label>
+                            <input type="text" id="taskTitle" required placeholder="Ex: Comprar mantimentos" class="form-input">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="taskDescription">Descrição</label>
+                            <textarea id="taskDescription" placeholder="Detalhes da tarefa (opcional)" class="form-input"></textarea>
+                        </div>
+                        
+                        <div class="form-row">
                             <div class="input-group">
-                                <label for="taskTitle">Título da Tarefa *</label>
-                                <input type="text" id="taskTitle" required placeholder="Ex: Comprar mantimentos">
+                                <label for="taskCategory">Categoria</label>
+                                <select id="taskCategory" class="form-input">
+                                    <option value="">Sem categoria</option>
+                                </select>
                             </div>
+                            
                             <div class="input-group">
-                                <label for="taskDescription">Descrição</label>
-                                <textarea id="taskDescription" placeholder="Detalhes da tarefa (opcional)"></textarea>
-                            </div>
-                            <div class="form-row">
-                                <div class="input-group">
-                                    <label for="taskCategory">Categoria</label>
-                                    <select id="taskCategory">
-                                        <option value="">Sem categoria</option>
-                                    </select>
-                                </div>
-                                <div class="input-group">
-                                    <label>&nbsp;</label>
-                                    <div style="display: flex; gap: 10px;">
-                                        <button type="submit" class="btn-primary" style="width: auto; flex: 1;">Salvar Tarefa</button>
-                                        <button type="button" class="btn-secondary" onclick="cancelEdit()" id="cancelBtn" style="display: none;">Cancelar</button>
-                                    </div>
+                                <label>&nbsp;</label>
+                                <div style="display: flex; gap: 10px;">
+                                    <button type="submit" class="btn-primary" style="width: auto; flex: 1;">Salvar 💾</button>
+                                    <button type="button" class="btn-secondary" onclick="cancelEdit()" id="cancelBtn" style="display: none;">Cancelar</button>
                                 </div>
                             </div>
-                        </form>
-                    </div>
-
-                    <!-- Filtros -->
-                    <div class="filters">
-                        <button class="filter-btn active" onclick="filterTasks('all')">Todas</button>
-                        <button class="filter-btn" onclick="filterTasks('pending')">Pendentes</button>
-                        <button class="filter-btn" onclick="filterTasks('completed')">Concluídas</button>
-                        <select id="categoryFilter" onchange="filterByCategory()" style="padding: 8px; border-radius: 5px; border: 2px solid #667eea;">
-                            <option value="">Todas as Categorias</option>
-                        </select>
-                    </div>
-
-                    <!-- Lista de Tarefas -->
-                    <div class="task-list" id="taskList"></div>
+                        </div>
+                    </form>
                 </div>
 
-                <!-- Seção de Categorias -->
-                <div id="categoriasSection" class="task-section hidden">
-                    <div class="task-form">
-                        <h3 id="categoryFormTitle">➕ Adicionar Nova Categoria</h3>
-                        <form onsubmit="handleCategorySubmit(event)" id="categoryForm">
-                            <input type="hidden" id="editCategoryId">
-                            <div class="form-row">
-                                <div class="input-group">
-                                    <label for="categoryName">Nome da Categoria *</label>
-                                    <input type="text" id="categoryName" required placeholder="Ex: Trabalho, Pessoal">
-                                </div>
-                                <div class="input-group">
-                                    <label for="categoryColor">Cor</label>
-                                    <input type="color" id="categoryColor" value="#667eea">
-                                </div>
-                            </div>
-                            <div style="display: flex; gap: 10px;">
-                                <button type="submit" class="btn-primary" style="flex: 1;">Salvar Categoria</button>
-                                <button type="button" class="btn-secondary" onclick="cancelCategoryEdit()" id="cancelCategoryBtn" style="display: none;">Cancelar</button>
-                            </div>
-                        </form>
-                    </div>
-
-                    <div id="categoryList"></div>
+                <div class="filters">
+                    <button class="filter-btn active" onclick="filterTasks('all')">Todas</button>
+                    <button class="filter-btn" onclick="filterTasks('pending')">Pendentes</button>
+                    <button class="filter-btn" onclick="filterTasks('completed')">Concluídas</button>
+                    <select id="categoryFilter" onchange="filterByCategory()" class="category-filter-select">
+                        <option value="">Todas as Categorias</option>
+                    </select>
                 </div>
+
+                <div class="task-list" id="taskList"></div>
+            </div>
+
+            <div id="categoriasSection" class="task-section hidden">
+                <div class="task-form">
+                    <h3 id="categoryFormTitle">➕ Adicionar Nova Categoria</h3>
+                    <form onsubmit="handleCategorySubmit(event)" id="categoryForm">
+                        <input type="hidden" id="editCategoryId">
+                        
+                        <div class="form-row">
+                            <div class="input-group">
+                                <label for="categoryName">Nome da Categoria *</label>
+                                <input type="text" id="categoryName" required placeholder="Ex: Trabalho" class="form-input">
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="categoryColor">Cor</label>
+                                <input type="color" id="categoryColor" value="#667eea" class="form-input">
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; gap: 10px;">
+                            <button type="submit" class="btn-primary" style="flex: 1;">Salvar 💾</button>
+                            <button type="button" class="btn-secondary" onclick="cancelCategoryEdit()" id="cancelCategoryBtn" style="display: none;">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="categoryList"></div>
             </div>
         </div>
 
         <div class="message" id="message"></div>
+
+        <div class="loading-overlay hidden" id="loadingOverlay">
+            <div class="loading-spinner"></div>
+            <p>Carregando...</p>
+        </div>
     </div>
 
     <script src="script.js"></script>
