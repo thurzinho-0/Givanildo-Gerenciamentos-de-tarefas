@@ -174,12 +174,22 @@ function showMessage(text, type) {
     }, 4000);
 }
 
-// ========== CADASTRO (SEM TELEFONE) ==========
+// ========== UTIL: DERIVAR NOME A PARTIR DO E-MAIL ==========
+function deriveNameFromEmail(email) {
+    if (!email || typeof email !== 'string') return '';
+    const local = email.split('@')[0] || '';
+    // substituir separadores por espaço, remover números extras se quiser, e capitalizar
+    const parts = local.replace(/[._\-]+/g, ' ').split(' ').filter(Boolean);
+    const name = parts.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
+    return name || email;
+}
+
+// ========== CADASTRO (SEM TELEFONE E SEM CAMPO NOME) ==========
 function handleCadastro(event) {
     event.preventDefault();
     showLoading();
     
-    const nome = document.getElementById('cadastroNome').value;
+    // Nome não vem do input; vamos derivar do e-mail
     const email = document.getElementById('cadastroEmail').value;
     const password = document.getElementById('cadastroPassword').value;
     const confirmPassword = document.getElementById('cadastroConfirmPassword').value;
@@ -217,8 +227,10 @@ function handleCadastro(event) {
         return;
     }
 
+    const nomeDerivado = deriveNameFromEmail(email);
+
     const novoUsuario = {
-        nome: nome,
+        nome: nomeDerivado,
         email: email,
         password: password
     };
@@ -229,8 +241,7 @@ function handleCadastro(event) {
     hideLoading();
     showMessage('🎉 Cadastro realizado com sucesso! Bem-vindo(a)!', 'success');
     
-    // Limpar formulário
-    document.getElementById('cadastroNome').value = '';
+    // Limpar formulário (campo nome removido no HTML)
     document.getElementById('cadastroEmail').value = '';
     document.getElementById('cadastroPassword').value = '';
     document.getElementById('cadastroConfirmPassword').value = '';
