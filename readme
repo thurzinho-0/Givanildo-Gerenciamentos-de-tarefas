@@ -1,72 +1,65 @@
-Relatório de Referências Utilizadas para o Desenvolvimento do Sistema de Gerenciamento de Tarefas
+# Relatório de Referências Utilizadas para o Desenvolvimento do Sistema de Gerenciamento de Tarefas Genivaldo
 
-Este relatório visa detalhar as referências, tutoriais e fontes que influenciaram e auxiliaram na construção do sistema de Gerenciamento de Tarefas Genivaldo, focando nas ferramentas e técnicas utilizadas, incluindo recursos de design, animações, validação de dados e implementação de funcionalidades.
+Este relatório visa detalhar as referências, tutoriais e fontes que influenciaram e auxiliaram no desenvolvimento do **Sistema de Gerenciamento de Tarefas Genivaldo**. O foco está nas ferramentas, técnicas, design, animações, validação de dados e implementação de funcionalidades que foram aplicadas ao longo do processo de criação.
 
-1. Referências Utilizadas
+## 1. Referências Utilizadas
 
-A construção do sistema foi baseada em várias boas práticas de desenvolvimento web e influências de tutoriais online de YouTube e sites especializados. A seguir estão as referências mais relevantes que impactaram a criação do código:
+A construção do sistema foi baseada em várias boas práticas de desenvolvimento web, influências de tutoriais online e fontes especializadas. A seguir, destacamos as principais referências que impactaram a criação do código:
 
-Canais de YouTube e Influências de Design
+### Canais de YouTube e Influências de Design
 
-A maior parte das inspirações para a implementação de design interativo e funcionalidades dinâmicas veio de canais especializados em desenvolvimento front‑end e UI/UX, que fornecem exemplos de como criar interfaces modernas, intuitivas e eficientes:
+A maior parte das inspirações para a implementação de design interativo e funcionalidades dinâmicas veio de canais especializados em desenvolvimento front‑end e UI/UX. Esses canais fornecem exemplos de como criar interfaces modernas, intuitivas e eficientes:
 
-Web Dev Simplified
-O canal Web Dev Simplified fornece tutoriais diretos e fáceis de entender, com foco em HTML, CSS e JavaScript. As dicas sobre animações CSS e controle de formulários em tempo real foram fundamentais para as interações de login e cadastro no sistema.
+- **[Web Dev Simplified](https://www.youtube.com/c/WebDevSimplified)**: Canal focado em HTML, CSS e JavaScript. As dicas sobre animações CSS e controle de formulários em tempo real foram fundamentais para as interações de login e cadastro no sistema.
 
-Traversy Media
-O Traversy Media é um dos maiores canais para desenvolvedores, cobrindo desde o básico até as últimas tendências do front-end e back-end. O curso de autenticação de usuário e validação de formulário influenciou fortemente as interações de login e cadastro do sistema.
+- **[Traversy Media](https://www.youtube.com/c/TraversyMedia)**: Um dos maiores canais para desenvolvedores, cobrindo desde o básico até as últimas tendências do front-end e back-end. O curso sobre autenticação de usuário e validação de formulários influenciou as interações de login e cadastro do sistema.
 
-Kevin Powell
-Focado principalmente em CSS, o canal de Kevin Powell foi crucial para entender como implementar designs modernos, especialmente no que diz respeito à usabilidade e animações de transição. A ideia de usar o flip-card UI para login e cadastro foi inspirada em tutoriais semelhantes neste canal.
+- **[Kevin Powell](https://www.youtube.com/c/KevinPowell)**: Focado principalmente em CSS, este canal foi crucial para entender como implementar designs modernos, especialmente em relação à usabilidade e animações de transição. A ideia de usar o flip-card UI para login e cadastro foi inspirada em tutoriais deste canal.
 
-The Net Ninja
-Com tutoriais detalhados sobre JavaScript, Node.js e frameworks front-end, o The Net Ninja foi uma excelente fonte para o aprendizado de como trabalhar com localStorage e como organizar os dados do usuário no navegador. Além disso, as abordagens para filtros de dados e organização de tarefas são baseadas em exemplos vistos neste canal.
+- **[The Net Ninja](https://www.youtube.com/c/TheNetNinja)**: Com tutoriais detalhados sobre JavaScript, Node.js e frameworks front-end, o The Net Ninja foi uma excelente fonte para aprender como trabalhar com localStorage e organizar os dados do usuário no navegador.
 
-DesignCourse
-O DesignCourse se concentrou em como criar interfaces limpas e intuitivas, combinando as melhores práticas de UI/UX com front-end. A maneira como ele ensina a usar icons, botões interativos e feedback de usuário foi fundamental para o desenvolvimento da experiência do usuário no sistema.
+- **[DesignCourse](https://www.youtube.com/c/DesignCourse)**: Este canal ensina como criar interfaces limpas e intuitivas, combinando as melhores práticas de UI/UX com front-end. A aplicação de ícones, botões interativos e feedback do usuário foi essencial para o desenvolvimento da experiência do usuário no sistema.
 
-Uso de Referências de Sites de Desenvolvimento
+### Sites de Desenvolvimento
 
-Além dos canais no YouTube, também foram consultados sites de desenvolvimento web que fornecem exemplos prontos de código e tutoriais. Isso ajudou a ajustar a parte de design e a funcionalidade de tarefas e categorias. Os conceitos de flip-cards, validação de formulário em tempo real, e sistemas de autenticação foram fortemente inspirados por tutoriais em plataformas como freeCodeCamp e W3Schools.
+Além dos canais do YouTube, também foram consultados sites especializados que fornecem exemplos prontos de código e tutoriais:
 
-2. Tecnologias Utilizadas
+- **freeCodeCamp**: Utilizado para aprender sobre validação de formulários em tempo real e como implementar autenticação de usuários.
+- **W3Schools**: Referência constante para aprender e adaptar elementos básicos de design e funcionalidades.
+
+## 2. Tecnologias Utilizadas
 
 O sistema de gerenciamento de tarefas foi desenvolvido utilizando as seguintes tecnologias e práticas de desenvolvimento:
 
-HTML5: Utilizado para estruturar o conteúdo da página, com especial atenção para os formularios de login e cadastro.
+- **HTML5**: Estruturação do conteúdo da página, com especial atenção aos formulários de login e cadastro.
+- **CSS3**: Responsável pelo design visual, incluindo gradientes, transições suaves e animações CSS.
+- **JavaScript**: Implementação das funcionalidades de validação de formulários, manipulação de dados (tarefas e categorias) e controle de temas (claro/escuro).
+- **localStorage**: Utilizado para persistir dados de usuários e tarefas, garantindo que as informações sejam salvas localmente no dispositivo do usuário, mesmo após o fechamento do navegador.
 
-CSS3: Aplicado para garantir o design visual, incluindo o uso de gradientes, transições suaves e animações CSS.
+## 3. Funcionalidades Implementadas
 
-JavaScript: Responsável pelas funcionalidades de validação de formulários, manipulação de dados (como tarefas e categorias) e controle de temas (claro/escuro).
+Com base nas referências coletadas, o sistema implementa diversas funcionalidades comuns em sistemas modernos de gerenciamento de tarefas:
 
-localStorage: Utilizado para persistir os dados de usuários e tarefas, mesmo após o fechamento do navegador, garantindo que as informações do sistema sejam salvas de forma local no dispositivo do usuário.
+- **Cadastro e Login de Usuário**: Utilização de formulários com validação em tempo real (e-mail e senha), proporcionando autenticação simples e eficiente.
+- **Tema Claro/Escuro e Acessibilidade**: Implementação de alternância entre tema claro e escuro, com ajuste de contraste para acessibilidade de pessoas com deficiência visual.
+- **Gerenciamento de Tarefas**: Adição, edição, exclusão e marcação de tarefas como concluídas ou pendentes, com organização por categorias (Trabalho, Pessoal, Estudos).
+- **Feedback Visual**: Mensagens de sucesso e erro para garantir que o usuário tenha informações claras sobre suas ações (ex: "Tarefa concluída", "Erro ao cadastrar").
+- **Responsividade**: O sistema é totalmente responsivo, garantindo boa experiência em dispositivos móveis e desktops.
 
-3. Funcionalidades Implementadas
+## 4. Aprendizado e Aplicação Prática
 
-Com base nas referências coletadas, o sistema implementa diversas funcionalidades que são comuns em sistemas modernos de gerenciamento de tarefas:
+Durante o desenvolvimento, o aprendizado foi contínuo, com base em tutoriais e exemplos prontos, adaptados para atender às necessidades específicas do projeto. Cada aspecto do design, interação e funcionalidade foi pensado para proporcionar uma experiência de usuário fluida e eficiente.
 
-Cadastro e Login de Usuário: Utilizando formulários com validação em tempo real (e-mail e senha), o sistema oferece uma autenticação simples, mas eficiente.
+- **Flip-card UI**: A implementação do flip-card UI foi diretamente inspirada por tutoriais do YouTube, aprimorando a experiência visual do login e cadastro.
+- **Integração com localStorage**: A integração com localStorage foi baseada em práticas amplamente documentadas em blogs e vídeos de desenvolvimento front-end.
+- **Validação de Formulários**: A implementação de validação de senha e e-mail em tempo real foi inspirada em exemplos de formulários interativos, comuns em tutoriais de aplicações web.
 
-Tema Claro/Escuro e Acessibilidade: A opção de alternar entre o tema claro e escuro foi uma das influências diretas de tutoriais de UI/UX. Além disso, a alteração de contraste foi implementada para tornar o site acessível a pessoas com deficiência visual.
+## Conclusão
 
-Gerenciamento de Tarefas: Com o uso de categorias (Trabalho, Pessoal, Estudos), os usuários podem adicionar, editar, excluir e marcar tarefas como concluídas ou pendentes.
+O **Gerenciamento de Tarefas Genivaldo** é um excelente exemplo de como utilizar referências e tutoriais populares para criar um sistema funcional e visualmente agradável. O uso de YouTube, blogs especializados e cursos online foi crucial para o desenvolvimento do sistema, proporcionando o conhecimento técnico necessário e práticas modernas de design e interação.
 
-Feedback Visual: Utilizando mensagens de sucesso e erro, o sistema garante que o usuário tenha informações claras sobre suas ações (ex: "Tarefa concluída", "Erro ao cadastrar", etc.).
+O sistema reflete uma abordagem moderna de desenvolvimento, aplicando boas práticas de **UI/UX**, interatividade e **acessibilidade**, utilizando tecnologias padrão como **HTML5**, **CSS3**, **JavaScript** e **localStorage**.
 
-Responsividade: O site é totalmente responsivo, garantindo que a interface funcione bem em dispositivos móveis e desktops.
+Acesse o sistema de gerenciamento de tarefas [aqui](https://givanildo-gerenciamentos-de-tarefas.vercel.app).
 
-4. Aprendizado e Aplicação Prática
-
-O processo de criação do sistema foi guiado por tutoriais e exemplos prontos, mas também houve um ajuste personalizado para atender às necessidades específicas do projeto. Cada aspecto do design, interação e funcionalidade foi pensado para proporcionar uma experiência de usuário fluida e eficiente.
-
-A decisão de usar o flip-card UI foi diretamente influenciada por tutoriais no YouTube, que mostram como melhorar a experiência visual de login e cadastro.
-
-A integração com localStorage foi baseada em práticas amplamente documentadas em blogs e vídeos de desenvolvimento front-end.
-
-A implementação de validação de senha e e-mail em tempo real foi inspirada em exemplos de formulários interativos, típicos em tutoriais modernos de desenvolvimento de aplicações web interativas.
-
-Conclusão
-
-O Gerenciamento de Tarefas Genivaldo é um excelente exemplo de como utilizar referências e tutoriais populares para criar um sistema funcional e visualmente agradável. O uso de YouTube, blogs especializados e cursos online foi crucial para o desenvolvimento do sistema, fornecendo conhecimento técnico e práticas modernas de design e interação.
-
-O sistema reflete uma abordagem moderna de desenvolvimento, aplicando boas práticas de UI/UX, interatividade e acessibilidade, tudo isso utilizando tecnologias web padrão como HTML5, CSS3, JavaScript e localStorage.
+---
